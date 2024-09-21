@@ -1,8 +1,8 @@
 package entities;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
-public record Product(String id, String name, Category category, int rating, LocalDate createdDate, LocalDate modifiedDate) {
+public record Product(String id, String name, Category category, int rating, LocalDateTime createdDate, LocalDateTime modifiedDate) {
      public Product {
         if (id == null || id.isBlank()) {
             throw new IllegalArgumentException("Id cannot be null or empty");

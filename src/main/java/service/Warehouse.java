@@ -2,9 +2,10 @@ package service;
 
 import entities.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.time.LocalDate;
 
 public class Warehouse {
     private final List<Product> products = new ArrayList<>();
@@ -28,18 +29,18 @@ public class Warehouse {
             newCategory,
             newRating,
             product.createdDate(),
-            LocalDate.now()
+            LocalDateTime.now()
         );
 
         products.set(products.indexOf(product), modifiedProduct);
     }
 
     public List<Product> getAllProducts() {
-        return List.copyOf(products);
+        return Collections.unmodifiableList(products);
     }
 
     public Product getProductById(String id) {
-        return products.stream()
+        return Collections.unmodifiableList(products).stream()
                 .filter(p -> p.id().equals(id))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Product with id " + id + " not found"));

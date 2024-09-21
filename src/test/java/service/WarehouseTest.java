@@ -4,11 +4,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import entities.*;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 public class WarehouseTest {
@@ -18,17 +17,16 @@ public class WarehouseTest {
     @BeforeEach
     void setUp() {
         warehouse = new Warehouse();
-        LocalDate now = LocalDate.now();
-        warehouse.addProducts(new Product("1", "Laptop", Category.ELECTRONICS, 10, now.minusDays(1), now));
-        warehouse.addProducts(new Product("2", "Phone", Category.ELECTRONICS, 9, now.minusDays(1), now));
-        warehouse.addProducts(new Product("3", "Tablet", Category.ELECTRONICS, 7, now.minusDays(1), now));
+        LocalDateTime dateTime = LocalDateTime.of(2024, 9, 21, 5, 0);
+        warehouse.addProducts(new Product("1", "Laptop", Category.ELECTRONICS, 10, dateTime, null));
+        warehouse.addProducts(new Product("2", "Phone", Category.ELECTRONICS, 9, dateTime, null));
+        warehouse.addProducts(new Product("3", "Tablet", Category.ELECTRONICS, 7, dateTime, null));
     }
 
     @Test
-    @DisplayName("Tests if adding products is correct")
     void testAddProducts() {
-        LocalDate now = LocalDate.now();
-        warehouse.addProducts(new Product("4", "Desktop", Category.ELECTRONICS, 9, now.minusDays(1), now));
+        LocalDateTime now = LocalDateTime.now();
+        warehouse.addProducts(new Product("4", "Desktop", Category.ELECTRONICS, 9, now.minusDays(1), null));
         Product product = warehouse.getProductById("4");
 
         assertEquals("4", product.id());
@@ -36,9 +34,9 @@ public class WarehouseTest {
 
     @Test
     void testAddProductsWithMissingAttributes() {
-        LocalDate now = LocalDate.now();
+        LocalDateTime now = LocalDateTime.now();
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            warehouse.addProducts(new Product("5", "", Category.ELECTRONICS, 5, now.minusDays(1), now));
+            warehouse.addProducts(new Product("5", "", Category.ELECTRONICS, 5, now.minusDays(1), null));
         });
         assertEquals("Name cannot be null or empty", exception.getMessage());
     }
@@ -46,14 +44,17 @@ public class WarehouseTest {
     @Test
     void testModifyProduct() {
         Product originalProduct = warehouse.getProductById("2");
+        LocalDateTime originalModifiedDate = originalProduct.modifiedDate();
 
         warehouse.modifyProduct("2", "Smartphone", Category.ELECTRONICS, 10);
         Product modifiedProduct = warehouse.getProductById("2");
+
         assertEquals("Smartphone", modifiedProduct.name());
         assertEquals(Category.ELECTRONICS, modifiedProduct.category());
         assertEquals(10, modifiedProduct.rating());
 
-        assertTrue(modifiedProduct.modifiedDate().isAfter(originalProduct.createdDate()));
+        assertTrue(modifiedProduct.modifiedDate().isAfter(originalModifiedDate));
+        assertEquals(originalProduct.createdDate(), modifiedProduct.createdDate());
     }
 
     @Test
