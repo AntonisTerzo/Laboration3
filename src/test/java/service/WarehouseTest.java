@@ -150,4 +150,15 @@ public class WarehouseTest {
         assertTrue(modifiedProduct.modifiedDate().isAfter(modifiedProduct.createdDate()));
     }
     
+    @Test
+    void testAddDuplicateProduct() {
+        LocalDateTime now = LocalDateTime.now();
+        Product duplicateProduct = new Product("1", "Duplicate Phone", Category.ELECTRONICS, 8, now, null);
+        
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            warehouse.addProducts(duplicateProduct);
+        });
+        
+        assertEquals("Product already exists", exception.getMessage());
+    }
 }
