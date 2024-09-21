@@ -10,6 +10,8 @@ import entities.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 public class WarehouseTest {
 
     private Warehouse warehouse;
@@ -18,8 +20,8 @@ public class WarehouseTest {
     void setUp() {
         warehouse = new Warehouse();
         LocalDateTime dateTime = LocalDateTime.of(2024, 9, 21, 5, 0);
-        warehouse.addProducts(new Product("1", "Laptop", Category.ELECTRONICS, 10, dateTime, null));
-        warehouse.addProducts(new Product("2", "Phone", Category.ELECTRONICS, 9, dateTime, null));
+        warehouse.addProducts(new Product("1", "Phone", Category.ELECTRONICS, 10, dateTime, null));
+        warehouse.addProducts(new Product("2", "Laptop", Category.ELECTRONICS, 9, dateTime, null));
         warehouse.addProducts(new Product("3", "Tablet", Category.ELECTRONICS, 7, dateTime, null));
     }
 
@@ -67,7 +69,21 @@ public class WarehouseTest {
 
     @Test
     void testGetAllProducts() {
+        List<Product> allProducts = warehouse.getAllProducts();
 
+        assertEquals(3, allProducts.size());
+        assertTrue(allProducts.stream().anyMatch(p -> p.id().equals("1")));
+        assertTrue(allProducts.stream().anyMatch(p -> p.id().equals("2")));
+        assertTrue(allProducts.stream().anyMatch(p -> p.id().equals("3")));
+    }
+
+    @Test
+    void testToModifyTheList_throwsAnException() {
+        List<Product> allProducts = warehouse.getAllProducts();
+
+        assertThrows(UnsupportedOperationException.class, () -> {
+            allProducts.add(new Product("4", "New Product", Category.ELECTRONICS, 8, LocalDateTime.now(), null));
+        });
     }
 
     @Test
