@@ -38,7 +38,7 @@ public class Warehouse {
         return List.copyOf(products);
     }
 
-    public Product getProductsById(String id) {
+    public Product getProductById(String id) {
         return products.stream()
                 .filter(p -> p.id().equals(id))
                 .findFirst()
