@@ -5,7 +5,9 @@ import entities.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Warehouse {
     private final List<Product> products = new ArrayList<>();
@@ -44,5 +46,12 @@ public class Warehouse {
                 .filter(p -> p.id().equals(id))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Product with id " + id + " not found"));
+    }
+
+    public List<Product> getProductsByCategory(Category category) {
+        return Collections.unmodifiableList(products).stream()
+        .filter(c -> c.category().equals(category))
+        .sorted(Comparator.comparing(Product::name))
+        .collect(Collectors.toList());
     }
 }

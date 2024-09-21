@@ -23,22 +23,25 @@ public class WarehouseTest {
         warehouse.addProducts(new Product("1", "Phone", Category.ELECTRONICS, 10, dateTime, null));
         warehouse.addProducts(new Product("2", "Laptop", Category.ELECTRONICS, 9, dateTime, null));
         warehouse.addProducts(new Product("3", "Tablet", Category.ELECTRONICS, 7, dateTime, null));
+        warehouse.addProducts(new Product("4", "Thai", Category.FOOD, 7, dateTime, null));
+        warehouse.addProducts(new Product("5", "Greek", Category.FOOD, 10, dateTime, null));
+        warehouse.addProducts(new Product("6", "Italian", Category.FOOD, 9, dateTime, null));
     }
 
     @Test
     void testAddProducts() {
         LocalDateTime now = LocalDateTime.now();
-        warehouse.addProducts(new Product("4", "Desktop", Category.ELECTRONICS, 9, now.minusDays(1), null));
-        Product product = warehouse.getProductById("4");
+        warehouse.addProducts(new Product("7", "Desktop", Category.ELECTRONICS, 9, now.minusDays(1), null));
+        Product product = warehouse.getProductById("7");
 
-        assertEquals("4", product.id());
+        assertEquals("7", product.id());
     }
 
     @Test
     void testAddProductsWithMissingAttributes() {
         LocalDateTime now = LocalDateTime.now();
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            warehouse.addProducts(new Product("5", "", Category.ELECTRONICS, 5, now.minusDays(1), null));
+            warehouse.addProducts(new Product("8", "", Category.ELECTRONICS, 5, now.minusDays(1), null));
         });
         assertEquals("Name cannot be null or empty", exception.getMessage());
     }
@@ -71,7 +74,7 @@ public class WarehouseTest {
     void testGetAllProducts() {
         List<Product> allProducts = warehouse.getAllProducts();
 
-        assertEquals(3, allProducts.size());
+        assertEquals(6, allProducts.size());
         assertTrue(allProducts.stream().anyMatch(p -> p.id().equals("1")));
         assertTrue(allProducts.stream().anyMatch(p -> p.id().equals("2")));
         assertTrue(allProducts.stream().anyMatch(p -> p.id().equals("3")));
@@ -91,7 +94,7 @@ public class WarehouseTest {
         Product result = warehouse.getProductById("2");
 
         assertEquals("2", result.id());
-        assertEquals("Phone", result.name());
+        assertEquals("Laptop", result.name());
     }
 
     @Test
@@ -101,5 +104,22 @@ public class WarehouseTest {
             warehouse.getProductById("99");
         });
         assertEquals("Product with id 99 not found", exception.getMessage());
+    }
+
+    @Test
+    void getAllProductsByCategoryAndSortedByName() {
+        List<Product> electronicsProducts = warehouse.getProductsByCategory(Category.ELECTRONICS);
+        
+        assertEquals(3, electronicsProducts.size());
+        assertEquals("Laptop", electronicsProducts.get(0).name());
+        assertEquals("Phone", electronicsProducts.get(1).name());
+        assertEquals("Tablet", electronicsProducts.get(2).name());
+        
+        List<Product> foodProducts = warehouse.getProductsByCategory(Category.FOOD);
+        
+        assertEquals(3, foodProducts.size());
+        assertEquals("Greek", foodProducts.get(0).name());
+        assertEquals("Italian", foodProducts.get(1).name());
+        assertEquals("Thai", foodProducts.get(2).name());
     }
 }
