@@ -63,4 +63,11 @@ public class Warehouse {
         .filter(d -> d.createdDate().isAfter(specificDateTime))
         .toList();
     }
+
+    public List<Product> getProductsModifiedSinceCreation() {
+        return Collections.unmodifiableList(products)
+        .stream()
+        .filter(p -> !p.modifiedDate().equals(p.createdDate()))
+        .toList();
+    }
 }

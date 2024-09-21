@@ -136,4 +136,18 @@ public class WarehouseTest {
         assertTrue(recentProducts.stream().anyMatch(p -> p.id().equals("5")));
     }
     
+    @Test
+    void testGetProductsModifiedSinceCreation() {
+        // Modify an existing product
+        warehouse.modifyProduct("2", "Modified Laptop", Category.ELECTRONICS, 10);
+
+        List<Product> modifiedProducts = warehouse.getProductsModifiedSinceCreation();
+
+        assertEquals(1, modifiedProducts.size());
+        Product modifiedProduct = modifiedProducts.get(0);
+        assertEquals("2", modifiedProduct.id());
+        assertEquals("Modified Laptop", modifiedProduct.name());
+        assertTrue(modifiedProduct.modifiedDate().isAfter(modifiedProduct.createdDate()));
+    }
+    
 }
