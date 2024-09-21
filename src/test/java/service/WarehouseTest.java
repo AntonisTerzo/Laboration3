@@ -19,13 +19,14 @@ public class WarehouseTest {
     @BeforeEach
     void setUp() {
         warehouse = new Warehouse();
-        LocalDateTime dateTime = LocalDateTime.of(2024, 9, 21, 5, 0);
+        LocalDateTime dateTime = LocalDateTime.of(2024, 9, 21, 11, 59);
+        LocalDateTime dateTime2 = LocalDateTime.of(2024, 9, 17, 11, 59);
         warehouse.addProducts(new Product("1", "Phone", Category.ELECTRONICS, 10, dateTime, null));
-        warehouse.addProducts(new Product("2", "Laptop", Category.ELECTRONICS, 9, dateTime, null));
+        warehouse.addProducts(new Product("2", "Laptop", Category.ELECTRONICS, 9, dateTime2, null));
         warehouse.addProducts(new Product("3", "Tablet", Category.ELECTRONICS, 7, dateTime, null));
-        warehouse.addProducts(new Product("4", "Thai", Category.FOOD, 7, dateTime, null));
+        warehouse.addProducts(new Product("4", "Thai", Category.FOOD, 7, dateTime2, null));
         warehouse.addProducts(new Product("5", "Greek", Category.FOOD, 10, dateTime, null));
-        warehouse.addProducts(new Product("6", "Italian", Category.FOOD, 9, dateTime, null));
+        warehouse.addProducts(new Product("6", "Italian", Category.FOOD, 9, dateTime2, null));
     }
 
     @Test
@@ -122,4 +123,17 @@ public class WarehouseTest {
         assertEquals("Italian", foodProducts.get(1).name());
         assertEquals("Thai", foodProducts.get(2).name());
     }
+
+    @Test
+    void testGetProductsCreatedAfter() {
+        LocalDateTime cutoffDate = LocalDateTime.of(2024, 9, 20, 0, 0);
+        List<Product> recentProducts = warehouse.getProductsCreatedAfter(cutoffDate);
+
+        assertEquals(3, recentProducts.size());
+        assertTrue(recentProducts.stream().allMatch(p -> p.createdDate().isAfter(cutoffDate)));
+        assertTrue(recentProducts.stream().anyMatch(p -> p.id().equals("1")));
+        assertTrue(recentProducts.stream().anyMatch(p -> p.id().equals("3")));
+        assertTrue(recentProducts.stream().anyMatch(p -> p.id().equals("5")));
+    }
+    
 }

@@ -20,19 +20,19 @@ public class Warehouse {
     }
 
     public void modifyProduct(String id, String newName, Category newCategory, int newRating) {
-        Product product = products.stream()
+        Product product = products
+                .stream()
                 .filter(p -> p.id().equals(id))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Product with id " + id + " not found"));
-        
+
         Product modifiedProduct = new Product(
-            id,
-            newName,
-            newCategory,
-            newRating,
-            product.createdDate(),
-            LocalDateTime.now()
-        );
+                id,
+                newName,
+                newCategory,
+                newRating,
+                product.createdDate(),
+                LocalDateTime.now());
 
         products.set(products.indexOf(product), modifiedProduct);
     }
@@ -42,16 +42,25 @@ public class Warehouse {
     }
 
     public Product getProductById(String id) {
-        return Collections.unmodifiableList(products).stream()
+        return Collections.unmodifiableList(products)
+                .stream()
                 .filter(p -> p.id().equals(id))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Product with id " + id + " not found"));
     }
 
     public List<Product> getProductsByCategory(Category category) {
-        return Collections.unmodifiableList(products).stream()
-        .filter(c -> c.category().equals(category))
-        .sorted(Comparator.comparing(Product::name))
-        .collect(Collectors.toList());
+        return Collections.unmodifiableList(products)
+                .stream()
+                .filter(c -> c.category().equals(category))
+                .sorted(Comparator.comparing(Product::name))
+                .collect(Collectors.toList());
+    }
+
+    public List<Product> getProductsCreatedAfter(LocalDateTime specificDateTime) {
+        return Collections.unmodifiableList(products)
+        .stream()
+        .filter(d -> d.createdDate().isAfter(specificDateTime))
+        .toList();
     }
 }
