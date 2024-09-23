@@ -11,7 +11,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 public class WarehouseTest {
@@ -101,12 +100,9 @@ public class WarehouseTest {
     }
 
     @Test
-    void getProductById_nonExistingId_throwsAnException() {
-        Exception exception = assertThrows(NoSuchElementException.class, () -> {
-            warehouse.getProductById("99")
-                    .orElseThrow(() -> new NoSuchElementException("Product with id 99 not found"));
-        });
-        assertEquals("Product with id 99 not found", exception.getMessage());
+    void getProductById_nonExistingId_returnsEmptyOptional() {
+        Optional<Product> product = warehouse.getProductById("99");
+        assertTrue(product.isEmpty(), "Expected empty Optional for non-existing product ID");
     }
 
     @Test
