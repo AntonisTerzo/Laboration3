@@ -11,6 +11,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 public class WarehouseTest {
 
@@ -33,9 +35,9 @@ public class WarehouseTest {
     void testAddProducts() {
         LocalDateTime now = LocalDateTime.now();
         warehouse.addProducts(new Product("7", "Desktop", Category.ELECTRONICS, 9, now.minusDays(1), null));
-        Product product = warehouse.getProductById("7");
+        Optional<Product> product = warehouse.getProductById("7");
 
-        assertEquals("7", product.id());
+        assertEquals("7", product.get().id());
     }
 
     @Test
@@ -49,18 +51,18 @@ public class WarehouseTest {
 
     @Test
     void testModifyProduct() {
-        Product originalProduct = warehouse.getProductById("2");
-        LocalDateTime originalModifiedDate = originalProduct.modifiedDate();
+        Optional<Product> originalProduct = warehouse.getProductById("2");
+        LocalDateTime originalModifiedDate = originalProduct.get().modifiedDate();
 
         warehouse.modifyProduct("2", "Smartphone", Category.ELECTRONICS, 10);
-        Product modifiedProduct = warehouse.getProductById("2");
+        Optional<Product> modifiedProduct = warehouse.getProductById("2");
 
-        assertEquals("Smartphone", modifiedProduct.name());
-        assertEquals(Category.ELECTRONICS, modifiedProduct.category());
-        assertEquals(10, modifiedProduct.rating());
+        assertEquals("Smartphone", modifiedProduct.get().name());
+        assertEquals(Category.ELECTRONICS, modifiedProduct.get().category());
+        assertEquals(10, modifiedProduct.get().rating());
 
-        assertTrue(modifiedProduct.modifiedDate().isAfter(originalModifiedDate));
-        assertEquals(originalProduct.createdDate(), modifiedProduct.createdDate());
+        assertTrue(modifiedProduct.get().modifiedDate().isAfter(originalModifiedDate));
+        assertEquals(originalProduct.get().createdDate(), modifiedProduct.get().createdDate());
     }
 
     @Test
@@ -92,17 +94,17 @@ public class WarehouseTest {
 
     @Test
     void getProductByExistingId_returnsMatchingProduct() {
-        Product result = warehouse.getProductById("2");
+        Optional<Product> result = warehouse.getProductById("2");
 
-        assertEquals("2", result.id());
-        assertEquals("Laptop", result.name());
+        assertEquals("2", result.get().id());
+        assertEquals("Laptop", result.get().name());
     }
 
     @Test
     void getProductById_nonExistingId_throwsAnException() {
-
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            warehouse.getProductById("99");
+        Exception exception = assertThrows(NoSuchElementException.class, () -> {
+            warehouse.getProductById("99")
+                    .orElseThrow(() -> new NoSuchElementException("Product with id 99 not found"));
         });
         assertEquals("Product with id 99 not found", exception.getMessage());
     }
@@ -110,14 +112,14 @@ public class WarehouseTest {
     @Test
     void getAllProductsByCategoryAndSortedByName() {
         List<Product> electronicsProducts = warehouse.getProductsByCategory(Category.ELECTRONICS);
-        
+
         assertEquals(3, electronicsProducts.size());
         assertEquals("Laptop", electronicsProducts.get(0).name());
         assertEquals("Phone", electronicsProducts.get(1).name());
         assertEquals("Tablet", electronicsProducts.get(2).name());
-        
+
         List<Product> foodProducts = warehouse.getProductsByCategory(Category.FOOD);
-        
+
         assertEquals(3, foodProducts.size());
         assertEquals("Greek", foodProducts.get(0).name());
         assertEquals("Italian", foodProducts.get(1).name());
@@ -135,7 +137,7 @@ public class WarehouseTest {
         assertTrue(recentProducts.stream().anyMatch(p -> p.id().equals("3")));
         assertTrue(recentProducts.stream().anyMatch(p -> p.id().equals("5")));
     }
-    
+
     @Test
     void testGetProductsModifiedSinceCreation() {
         // Modify an existing product
@@ -149,16 +151,16 @@ public class WarehouseTest {
         assertEquals("Modified Laptop", modifiedProduct.name());
         assertTrue(modifiedProduct.modifiedDate().isAfter(modifiedProduct.createdDate()));
     }
-    
+
     @Test
     void testAddDuplicateProduct() {
         LocalDateTime now = LocalDateTime.now();
         Product duplicateProduct = new Product("1", "Duplicate Phone", Category.ELECTRONICS, 8, now, null);
-        
+
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
             warehouse.addProducts(duplicateProduct);
         });
-        
+
         assertEquals("Product already exists", exception.getMessage());
     }
 }

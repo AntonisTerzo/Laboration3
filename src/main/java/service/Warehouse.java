@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Warehouse {
@@ -41,12 +42,11 @@ public class Warehouse {
         return Collections.unmodifiableList(products);
     }
 
-    public Product getProductById(String id) {
+    public Optional<Product> getProductById(String id) {
         return Collections.unmodifiableList(products)
                 .stream()
                 .filter(p -> p.id().equals(id))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Product with id " + id + " not found"));
+                .findFirst();
     }
 
     public List<Product> getProductsByCategory(Category category) {
@@ -59,15 +59,15 @@ public class Warehouse {
 
     public List<Product> getProductsCreatedAfter(LocalDateTime specificDateTime) {
         return Collections.unmodifiableList(products)
-        .stream()
-        .filter(d -> d.createdDate().isAfter(specificDateTime))
-        .toList();
+                .stream()
+                .filter(d -> d.createdDate().isAfter(specificDateTime))
+                .toList();
     }
 
     public List<Product> getProductsModifiedSinceCreation() {
         return Collections.unmodifiableList(products)
-        .stream()
-        .filter(p -> !p.modifiedDate().equals(p.createdDate()))
-        .toList();
+                .stream()
+                .filter(p -> !p.modifiedDate().equals(p.createdDate()))
+                .toList();
     }
 }
